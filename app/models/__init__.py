@@ -1,1 +1,1 @@
-from census_models import CountyData, CensusHistory
+from census_models import *

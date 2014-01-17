@@ -4,9 +4,9 @@ $(document).ready(function(){
         height = 600;
         
     var urls = {
-            counties : "data/us_counties.json",
-            states : "data/us-states.json",
-            maine : "data/maine.json"
+            counties : "/static/data/us_counties.json",
+            states : "/static/data/us-states.json",
+            maine : "/static/data/maine.json"
         },
         q,
         projection,

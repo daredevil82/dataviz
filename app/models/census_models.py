@@ -22,67 +22,129 @@ class CountyData(models.Model):
     county_fips = models.CharField(max_length = 10, db_column = "CNTY_FIPS")
     state_fips = models.CharField(max_length = 10, db_column = "STATE_FIPS")
 
-    pop_2000 = models.IntegerField(db_column = "POP2000")
-    pop_2007 = models.IntegerField(db_column = "POP2007")
-    pop_2000_sqmi = models.FloatField(db_column = "POP00_SQMI")
-    pop_2007_sqmi = models.FloatField(db_column = "POP07_SQMI")
-    area = models.FloatField(db_column = "SQMI")
-
     oid = models.IntegerField(db_column = "OID")
     other = models.IntegerField(db_column = "OTHER")
-
-    males = models.IntegerField(db_column = "MALES")
-    females = models.IntegerField(db_column = "FEMALES")
-
-    median_age = models.FloatField(db_column = "MED_AGE")
-    median_age_male = models.FloatField(db_column = "MED_AGE_M")
-    median_age_female = models.FloatField(db_column = "MED_AGE_F")
-
-    households = models.IntegerField("HOUSEHOLDS")
-    single_male = models.IntegerField(db_column = "HSEHLD_1_M")
-    single_female = models.IntegerField(db_column = "HSEHLD_1_F")
-    avg_household_size = models.FloatField(db_column = "AVE_HH_SZ")
-
-    married_child = models.IntegerField(db_column = "MARHH_CHD")
-    married__no_child = models.IntegerField(db_column = "MARHH_NO_C")
-    mhh_child = models.IntegerField(db_column = "MHH_CHILD")
-    fhh_child = models.IntegerField(db_column = "FHH_CHILD")
-    families = models.IntegerField(db_column = "FAMILIES")
-    avg_family_size = models.FloatField(db_column = "AVE_FAM_SZ")
-
-    housing_units = models.IntegerField(db_column = "HSE_UNITS")
-    owner_occupied = models.IntegerField(db_column = "OWNER_OCC")
-    rental_occupied = models.IntegerField(db_column = "RENTER_OCC")
-    vacant = models.IntegerField(db_column = "VACANT")
-    
-    age_under_5 = models.IntegerField(db_column = "AGE_UNDER5")
-    age_5_17 = models.IntegerField(db_column = "AGE_5_17")
-    age_18_21 = models.IntegerField(db_column = "AGE_18_21")
-    age_22_29 = models.IntegerField(db_column = "AGE_22_29")
-    age_30_39 = models.IntegerField(db_column = "AGE_30_39")
-    age_40_49 = models.IntegerField(db_column = "AGE_40_49")
-    age_50_64 = models.IntegerField(db_column = "AGE_50_64")
-    age_65_older = models.IntegerField(db_column = "AGE_65_UP")
-
-    race_white = models.IntegerField(db_column = "WHITE")
-    race_black = models.IntegerField(db_column = "BLACK")
-    race_hispanic = models.IntegerField(db_column = "HISPANIC")
-    race_asian = models.IntegerField(db_column = "ASIAN")
-    race_multi = models.IntegerField(db_column = "MULT_RACE")
-    race_hawaiian_pi = models.IntegerField(db_column = "HAWN_PI")
-    race_american_indian = models.IntegerField(db_column = "AMERI_ES")
-
-    farm_count_2007 = models.FloatField(db_column = "NO_FARMS97")
-    farm_avg_size_2007 = models.FloatField(db_column = "AVG_SIZE97")
-    crop_acres_2007 = models.FloatField(db_column = "CROP_ACR97")
-    avg_sale_2007 = models.FloatField(db_column = "AVG_SALE97")
+    area = models.FloatField(db_column = "SQMI")
 
     def __unicode__(self):
-        return u'%s, %s\n2007 Population: %d\n' % (self.county_name, self.state_name, self.pop_2007)
+        return u'%s, %s\nfips: %s\n' % (self.county_name, self.state_name, self.fips)
 
     class Meta:
         app_label = "app"
         db_table = "county_data"
+
+class FarmData(models.Model):
+    id = models.AutoField(primary_key = True)
+    county = models.ForeignKey(CountyData)
+
+    farm_count_2007 = models.FloatField()
+    farm_avg_size_2007 = models.FloatField()
+    crop_acres_2007 = models.FloatField()
+    avg_sale_2007 = models.FloatField( )
+
+    def __unicode__(self):
+        return u'%s Farm Data' % (self.county.county_name)
+
+    class Meta:
+        app_label = "app"
+        db_table = "county_farm_data"
+
+class HousingData(models.Model):
+    id = models.AutoField(primary_key = True)
+    county = models.ForeignKey(CountyData)
+
+    housing_units = models.IntegerField()
+    owner_occupied = models.IntegerField()
+    rental_occupied = models.IntegerField()
+    vacant = models.IntegerField()
+
+    def __unicode__(self):
+        return u'%s Housing Data' % (self.county.county_name)
+
+    class Meta:
+        app_label = "app"
+        db_table = "county_housing_data"
+
+class FamilyData(models.Model):
+    id = models.AutoField(primary_key = True)
+    county = models.ForeignKey(CountyData)
+
+    households = models.IntegerField()
+    single_male = models.IntegerField()
+    single_female = models.IntegerField()
+    avg_household_size = models.FloatField()
+
+    married_child = models.IntegerField()
+    married__no_child = models.IntegerField()
+    mhh_child = models.IntegerField()
+    fhh_child = models.IntegerField()
+    families = models.IntegerField()
+    avg_family_size = models.FloatField()
+
+    housing_units = models.IntegerField()
+    owner_occupied = models.IntegerField()
+    rental_occupied = models.IntegerField()
+    vacant = models.IntegerField()
+
+    def __unicode__(self):
+        return u'%s Family Data' % (self.county.county_name)
+
+    class Meta:
+        app_label = "app"
+        db_table = "county_family_data"
+
+class PopulationData(models.Model):
+    id = models.AutoField(primary_key = True)
+    county = models.ForeignKey(CountyData)
+
+    pop_2000 = models.IntegerField()
+    pop_2007 = models.IntegerField()
+    pop_2000_sqmi = models.FloatField()
+    pop_2007_sqmi = models.FloatField()
+
+    males = models.IntegerField()
+    females = models.IntegerField()
+
+    median_age = models.FloatField()
+    median_age_male = models.FloatField()
+    median_age_female = models.FloatField()
+
+    age_under_5 = models.IntegerField()
+    age_5_17 = models.IntegerField()
+    age_18_21 = models.IntegerField()
+    age_22_29 = models.IntegerField()
+    age_30_39 = models.IntegerField()
+    age_40_49 = models.IntegerField()
+    age_50_64 = models.IntegerField()
+    age_65_older = models.IntegerField()
+
+    def __unicode__(self):
+        return u'%s\n2000 Population:\t%d\n2007 Population\t%d\n\n' % (self.county.county_name, 
+            self.pop_2000, self.pop_2007)
+
+    class Meta:
+        app_label = "app"
+        db_table = "county_pop_data"
+
+class DemographicData(models.Model):
+    id = models.AutoField(primary_key = True)
+    county = models.ForeignKey(CountyData)
+
+    race_white = models.IntegerField()
+    race_black = models.IntegerField()
+    race_hispanic = models.IntegerField()
+    race_asian = models.IntegerField()
+    race_multi = models.IntegerField()
+    race_hawaiian_pi = models.IntegerField()
+    race_american_indian = models.IntegerField()
+
+    def __unicode__(self):
+        return u'%s Demographic Data' % (self.county.county_name)
+
+    class Meta:
+        app_label = "app"
+        db_table = "county_demographic_data"
+
 
 
 
