@@ -1,0 +1,38 @@
+.background{
+    fill : lightgoldenrodyellow;
+    pointer-events : all;
+
+}
+
+svg{
+    border : 1px solid black;
+    border-radius: 5px;
+}
+
+.states path{
+    fill : none;
+    stroke-width : 1.0px;
+    stroke : red;
+}
+
+.counties path{
+    fill : #aaa;
+    stroke : red;
+    stroke-width : 0.5px;
+}
+
+.counties path:hover{
+    fill : blue;
+}
+
+div.tooltip {
+    position : absolute;
+    width : 200px;
+    padding : 10px;
+    font : 12px sans-serif;
+    background : #fff;
+    border-radius: 10px;
+    border : 1px solid #aaa;
+    pointer-events : none;
+}
+
