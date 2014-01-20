@@ -9,16 +9,10 @@ svg{
     border-radius: 5px;
 }
 
-.states path{
-    fill : none;
-    stroke-width : 1.0px;
-    stroke : red;
-}
-
 .counties path{
     fill : #aaa;
-    stroke : red;
-    stroke-width : 0.5px;
+    stroke : #000000;
+    stroke-width : 1.0px;
 }
 
 .counties path:hover{
@@ -34,5 +28,67 @@ div.tooltip {
     border-radius: 10px;
     border : 1px solid #aaa;
     pointer-events : none;
+}
+
+#map_container{
+    display: inline-block;
+    float: left;
+}
+
+#data_wrapper{
+    width: 500px;
+    height : 600px;
+    border: 1px solid black;
+    display: inline-block;
+    float: left;
+    border-radius: 10px;
+    margin-left: 40px;
+    padding: 10px;
+}
+
+.hide_element{
+    display: none;
+}
+
+.show_element{
+    display: :inline-block;
+}
+
+.inline-left {
+    display: inline-block;
+    float: left;
+}
+
+#population_slider{
+    height: 300px;
+    width: 20px;
+}
+
+#slider_value{
+    width : 100px;
+    height : 30px;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 10px;
+    margin-top: 125px;
+    border : 1px solid black;
+}
+
+#map_colors{
+    width: 420px;
+    height: 30px;
+    margin-top: 335px;
+    position: absolute;
+}
+
+.chloropleth_boxes{
+    width : 30px;
+    height : 30px;
+    display: inline-block;
+    float: left;
+    margin-left: 10px;
+    border : 1px solid black;
+    border-radius: 5px;
 }
 

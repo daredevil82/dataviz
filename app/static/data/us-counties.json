@@ -1,3 +1,9 @@
+/*
+    File:   us-counties.json
+    Author: Matt Bostock
+    Desc:   GeoJSON object for all US Counties
+*/
+
 {"type":"FeatureCollection","features":[
 {"type":"Feature","id":"01001","properties":{"name":"Autauga"},"geometry":{"type":"Polygon","coordinates":[[[-86.411786,32.706342],[-86.411786,32.410587],[-86.499417,32.344863],[-86.817079,32.339387],[-86.915664,32.662526],[-86.411786,32.706342]]]}},
 {"type":"Feature","id":"01003","properties":{"name":"Baldwin"},"geometry":{"type":"Polygon","coordinates":[[[-87.76459,31.298768],[-87.616713,31.243998],[-87.600282,30.997536],[-87.518128,30.280057],[-88.005575,30.685351],[-87.972714,31.161844],[-87.945329,31.194706],[-87.76459,31.298768]]]}},

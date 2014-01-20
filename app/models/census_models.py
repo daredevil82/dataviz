@@ -12,6 +12,19 @@ class CensusHistory(models.Model):
         app_label = "app"
         db_table = "census_history"
 
+class StateCensusHistory(models.Model):
+    id = models.AutoField(primary_key = True)
+    year = models.IntegerField()
+    json = models.TextField()
+
+    def __unicode__(self):
+        return "%d, %s\n" % (self.year, self.json)
+
+    class Meta:
+        app_label = "app"
+        db_table = "state_census_history"
+
+
 class CountyData(models.Model):
     id = models.AutoField(primary_key = True)
 

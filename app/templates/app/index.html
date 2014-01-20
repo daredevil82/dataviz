@@ -4,12 +4,32 @@
 
     <head>
         <link rel="stylesheet" type="text/css" href="/static/css/main.css">
-        <script type="text/javascript" src = "/static/js/d3.js"></script>
-        <script type="text/javascript" src = "/static/js/topojson.js"></script>
-        <script type="text/javascript" src = "/static/js/jquery.js"></script>
-        <script type="text/javascript" src = "/static/js/queue.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css">
+
+        <script src = "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.0/d3.min.js"></script>
+        <script type="text/javascript" src = "/static/js/lib/topojson.js"></script>
+        <script src = "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+        <script type="text/javascript" src = "/static/js/plugin/jquery.cookie.js"></script>
+        <script type="text/javascript" src = "/static/js/plugin/jquery.csrf.js"></script>
+
+        <script type="text/javascript" src = "/static/js/defaults.js"></script>
         <script type="text/javascript" src = "/static/js/usmap.js"></script>
     </head>
 
-    <body></body>
+    <body>
+        <div id = "map_container"></div>
+        <div id = "data_wrapper">
+            <div id = "map_selection">
+                <input type = "radio" name = "map_option" id = "pop_heatmap">
+                <label for = "pop_heatmap">Population Heatmap</label>
+            </div>
+            <div id = "population_slider_wrapper" class = "hide_element">
+                <div id = "population_slider" class = "inline-left"></div>
+                <div id = "slider_value" class = "inline-left"></div>
+                <div id = "map_colors"></div>
+            </div>
+        </div>
+    </body>
 </html>
