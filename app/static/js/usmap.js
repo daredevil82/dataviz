@@ -15,7 +15,9 @@ $(document).ready(function(){
         svg,
         tooltip,
         data,
-        pop;
+        pop,
+        default_tooltip = true;
+        chloropleth_selected = false;
 
     init();
 
@@ -64,6 +66,8 @@ $(document).ready(function(){
         tooltip.append("div")
             .attr("id", "countyName");
 
+        $("#countyName").append(defaults.defaultTooltipTemplate());
+
         d3.json(defaults.getUrls().maine, function(e, map){
 
             //use hancock county to center the map in a 500x600 svg element with some fancy math
@@ -88,7 +92,7 @@ $(document).ready(function(){
                     return "rotate(17)";
                 })
                 .attr("class", function(d){
-                    return d.properties.NAME;
+                    return d.properties.name;
                 })
                 .on("mouseover", showTooltip)
                 .on("mousemove", updateTooltip)
@@ -96,6 +100,22 @@ $(document).ready(function(){
                 .on("contextmenu", rightClick)
                 .on("click", mouseClick);
             });
+
+            d3.csv(defaults.getUrls().cities, function(e, map){
+                g.selectAll("circle")
+                    .data(map)
+                    .enter()
+                    .append("circle")
+                    .attr("cx", function(d){
+                        return projection([d.lon, d.lat])[0];
+                    })
+                    .attr("cy", function(d){
+                        return projection([d.lon, d.lat])[1];
+                    })
+                    .attr("r", 5)
+                    .style("fill", "red");
+            });
+
 
     }
 
@@ -105,12 +125,12 @@ $(document).ready(function(){
     }
 
     function mouseClick(d, i){
-        console.log(d.properties.FIPS);
+        console.log(d.properties.fips);
 
         $.ajax({
             url : "getCountyData/",
             type : "POST",
-            data : {"fips" : d.properties.FIPS},
+            data : {"fips" : d.properties.fips},
             dataType : "json",
             success : function(results){
                 if (results.success == "true")
@@ -150,6 +170,7 @@ $(document).ready(function(){
 
     //Shows the tooltip on mouseover of a county
     function showTooltip(d, i){
+        tooltipText(d);
         tooltip.style("left", (d3.event.pageX + 5) + "px")
                 .style("top", (d3.event.pageY - 5) + "px")
                 .transition()
@@ -158,12 +179,26 @@ $(document).ready(function(){
                 //.style("background-color", "")
                 .style("display", "block");
 
-        $(this).css("stroke", "#0000FF")
+        $(this).css("stroke", "#FF0000")
                 .css("stroke-width", 1.5 + "px");
+    }
 
-        console.log(d.properties);
-        $("#countyName").text("County name:\t" + d.properties.NAME + ", " + d.properties.STATE_NAME + "\n\nFIPS:\t" + d.properties.FIPS);
+    function tooltipText(d){
+        if (default_tooltip) {
+            $("#county").text(d.properties.name);
+            $("#fips").text(d.properties.fips);
+        } else if (chloropleth_selected){
 
+            if (!($("#chloropleth_data").length < 0)){
+                $("#countyName").empty()
+                                .append(defaults.chloroplethTooltipTemplate());
+            }
+
+            $("#county").text(d.properties.name);
+            $("#fips").text(d.properties.fips);
+            $("#year").text($("#slider_value").text());
+            $("#year_pop").text(pop[d.properties.name]);
+        }
     }
 
     //Hides the tooltip once the mouse pointer leaves the county
@@ -188,13 +223,16 @@ $(document).ready(function(){
         $("#map_selection").buttonset();
 
         $("#pop_heatmap").click(function(e){
-            $("#population_slider_wrapper").removeClass("hide_element").addClass("show_element");
-            mapColors();
-            populationSliderHandler(2000);
+            if (!chloropleth_selected) {
+                $("#population_slider_wrapper").removeClass("hide_element").addClass("show_element");
+                mapColors();
+                populationSliderHandler(2000);
+                default_tooltip = false;
+                chloropleth_selected = true;
+            }
         });
 
         $("#population_slider").slider({
-            orientation : "vertical",
             range : "max",
             min : 1790,
             max : 2000,
@@ -213,15 +251,20 @@ $(document).ready(function(){
     function chloropleth(data){
         pop = JSON.parse(data[0].fields.json);
         var popDomain = defaults.getPopulationDomain();
-        var scale = defaults.getScale(popDomain[0], popDomain[1], 10);
+        var scale = defaults.getScale(popDomain[0], popDomain[1], 9);
         var colors = defaults.getPopColors();
 
         for (key in pop){
             for (var i = 0; i < scale.length; i++){
-                if (pop[key] >= scale[i]){
-                    $("." + key).css("fill", colors[i])
+                if (pop[key] == 0) {
+                    $("." + key).css("fill", "#FFFFFF")
+                                .css("stroke", "#000000");
+                } 
+                else if (pop[key] >= scale[i]){
+                    $("." + key).css("fill", colors[i + 1])
                                 .css("stroke", "#000000");
                 }
+                
 
             }
         }
@@ -232,12 +275,19 @@ $(document).ready(function(){
         var appendString = "";
 
         for (var i = 0; i < colors.length; i++)
-            appendString += "<div class = 'chloropleth_boxes' id = 'chloropleth_" + i + "'></div>"
+            appendString += "<div class = 'chloropleth_boxes' id = 'chloropleth_" + i + "'>" + 
+                            "<div class = 'box_label' id = 'box_" + i + "'></div></div>"
 
         $("#map_colors").append(appendString);
+        var domain = defaults.getPopulationDomain();
+        var scale = defaults.getScale(domain[0], domain[1], 10);
 
-        for (var i = 0; i < colors.length; i++)
+        for (var i = 0; i < colors.length; i++) {
             $("#chloropleth_" + i).css("background-color", colors[i]);
+            $("#box_" + i).text(Math.floor(scale[i]));
+        }
+
+
 
     }
 

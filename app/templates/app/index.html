@@ -7,15 +7,15 @@
         <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css">
 
         <script src = "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.0/d3.min.js"></script>
-        <script type="text/javascript" src = "/static/js/lib/topojson.js"></script>
         <script src = "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script src = "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
-        <script type="text/javascript" src = "/static/js/plugin/jquery.cookie.js"></script>
-        <script type="text/javascript" src = "/static/js/plugin/jquery.csrf.js"></script>
+        <script src = "/static/js/plugin/jquery.cookie.js"></script>
+        <script src = "/static/js/plugin/jquery.csrf.js"></script>
+        <script src = "/static/js/plugin/sprintf.js"></script>
 
-        <script type="text/javascript" src = "/static/js/defaults.js"></script>
-        <script type="text/javascript" src = "/static/js/usmap.js"></script>
+        <script src = "/static/js/defaults.js"></script>
+        <script src = "/static/js/usmap.js"></script>
     </head>
 
     <body>
@@ -23,11 +23,11 @@
         <div id = "data_wrapper">
             <div id = "map_selection">
                 <input type = "radio" name = "map_option" id = "pop_heatmap">
-                <label for = "pop_heatmap">Population Heatmap</label>
+                <label for = "pop_heatmap">Population Chloropleth</label>
             </div>
             <div id = "population_slider_wrapper" class = "hide_element">
                 <div id = "population_slider" class = "inline-left"></div>
-                <div id = "slider_value" class = "inline-left"></div>
+                <div id = "slider_value"></div>
                 <div id = "map_colors"></div>
             </div>
         </div>

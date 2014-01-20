@@ -21,7 +21,7 @@ svg{
 
 div.tooltip {
     position : absolute;
-    width : 200px;
+    width : 150px;
     padding : 10px;
     font : 12px sans-serif;
     background : #fff;
@@ -59,9 +59,14 @@ div.tooltip {
     float: left;
 }
 
+#population_slider_wrapper{
+    width: 500px;
+}
+
 #population_slider{
-    height: 300px;
-    width: 20px;
+    width: 300px;
+    height: 10px;
+    margin : 20px auto;
 }
 
 #slider_value{
@@ -70,25 +75,31 @@ div.tooltip {
     text-align: center;
     border-radius: 5px;
     padding: 5px;
-    margin-left: 10px;
-    margin-top: 125px;
+    margin-left: 115px;
+    margin-top: 45px;
     border : 1px solid black;
+    position: absolute;
 }
 
 #map_colors{
-    width: 420px;
+    width: 500px;
     height: 30px;
-    margin-top: 335px;
+    margin-top: 155px;
     position: absolute;
 }
 
 .chloropleth_boxes{
-    width : 30px;
+    width : 45px;
     height : 30px;
     display: inline-block;
     float: left;
-    margin-left: 10px;
+    margin-left: 3px;
     border : 1px solid black;
     border-radius: 5px;
+}
+
+.box_label {
+    font-size: 12px;
+    text-align: center;
 }
 

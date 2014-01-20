@@ -24,20 +24,21 @@ function Defaults(){
     }
 
     this.getPopColors = function(){
-        return ["#FFBABA", "#FFADAD", "#FF9C9C", "#FF8585", "#FC6F6F",
-                    "#FF5E5E", "#FF4A4A", "#FF3636", "#FF1F1F", "#FF0000"];
+        return ["#FFFFFF", "#E6E6FF", "#CDCDFF", "#B4B4FF", "#9B9BFF",
+                    "#8282FF", "#6969FF", "#5050FF", "#3737FF", "#0000FF"];
     }
 
     this.getUrls = function(){
         return {
             counties : "/static/data/us_counties.json",
             states : "/static/data/us-states.json",
-            maine : "/static/data/maine.json"
+            maine : "/static/data/maine.json",
+            cities : "/static/data/maine_cities.csv"
         }
     }
 
     this.getPopulationDomain = function(){
-        return [0, 77634];
+        return [0, 100000];
     }
 
     //Returns a JS object with the values for each step in the scale
@@ -51,5 +52,17 @@ function Defaults(){
             scale[i] = min += stepRange;
 
         return scale;
+    }
+
+    this.defaultTooltipTemplate = function(){
+        return "<div id = 'county_name' class = 'county_record'>County: <span id = 'county'></span></div>" + 
+                        "<div id = 'county_fips' class = 'county_record'>FIPS: <span id = 'fips'></span></div>";
+    }
+
+    this.chloroplethTooltipTemplate = function(){
+        var template = this.defaultTooltipTemplate();
+        template += "<div id = 'chloropleth_data'><div class = 'county_record'><span id = 'year'></span> Population: <span id = 'year_pop'></span></div></div>"
+
+        return template;
     }
 }
