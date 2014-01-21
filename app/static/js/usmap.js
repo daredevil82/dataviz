@@ -14,6 +14,7 @@ $(document).ready(function(){
         zoom, 
         svg,
         tooltip,
+        cityTooltip,
         data,
         pop,
         default_tooltip = true;
@@ -26,9 +27,11 @@ $(document).ready(function(){
         initElements();
 
         //initialize projection with default scale.  
-        projection = d3.geo.albersUsa()
-                        .scale(1)
-                        .translate([0, 0]);
+        projection = d3.geo.mercator()
+                        .scale(5500)
+                        .translate([0, 0])
+                        .center([-71.8, 47.5])
+                        .precision(0);
 
         //set up the path attribute
         path = d3.geo.path()
@@ -49,7 +52,6 @@ $(document).ready(function(){
 
         d3.select("body")
             .on("keydown", keyHandler);
-                    
 
         svg.append("rect")
             .attr("class", "background")
@@ -62,23 +64,32 @@ $(document).ready(function(){
                     .attr("class", "tooltip")
                     .style("opacity", 1e-6)
                     .style("background", "rgba(250, 250, 250, .7)");
+        
+        cityTooltip = d3.select("body")
+                        .append("div")
+                        .attr("class", "tooltip")
+                        .style("opacity", 1e-6)
+                        .style("background", "rgba(250, 250, 250, .7)");
 
         tooltip.append("div")
             .attr("id", "countyName");
 
+        cityTooltip.append("div")
+            .attr("id", "cityData");
+
         $("#countyName").append(defaults.defaultTooltipTemplate());
+        $("#cityData").append(defaults.cityTooltip());
 
         d3.json(defaults.getUrls().maine, function(e, map){
 
             //use hancock county to center the map in a 500x600 svg element with some fancy math
             //See http://bl.ocks.org/mbostock/4707858 for the source of the code below
             var b = path.bounds(map.features[10]),
-                s = .22 / Math.max((b[1][0] - b[0][0]) / defaults.getWidth(), (b[1][1] - b[0][1]) / defaults.getHeight()),
-                t = [(defaults.getWidth() - s * (b[1][0] + b[0][0])) / 2.16, (defaults.getHeight() - s * (b[1][1] + b[0][1])) / 2.06];
+            s = .22 / Math.max((b[1][0] - b[0][0]) / defaults.getWidth(), (b[1][1] - b[0][1]) / defaults.getHeight()),
+            t = [(defaults.getWidth() - s * (b[1][0] + b[0][0])) / 2.16, (defaults.getHeight() - s * (b[1][1] + b[0][1])) / 2.06];
 
-            console.log(s + "\n" + t);
-
-            projection.scale(s).translate(t);
+            //projection.scale(s).translate(t);
+            //projection.scale(s);
             g = svg.append("g");
 
             g.append("g")
@@ -88,9 +99,6 @@ $(document).ready(function(){
                 .enter()
                 .append("path")
                 .attr("d", path)
-                .attr("transform", function(d){
-                    return "rotate(17)";
-                })
                 .attr("class", function(d){
                     return d.properties.name;
                 })
@@ -99,24 +107,26 @@ $(document).ready(function(){
                 .on("mouseout", hideTooltip)
                 .on("contextmenu", rightClick)
                 .on("click", mouseClick);
-            });
 
-            d3.csv(defaults.getUrls().cities, function(e, map){
-                g.selectAll("circle")
-                    .data(map)
-                    .enter()
-                    .append("circle")
-                    .attr("cx", function(d){
-                        return projection([d.lon, d.lat])[0];
-                    })
-                    .attr("cy", function(d){
-                        return projection([d.lon, d.lat])[1];
-                    })
-                    .attr("r", 5)
-                    .style("fill", "red");
-            });
-
-
+            
+        });
+            
+        //handles the insertion of city points on the map
+        d3.csv(defaults.getUrls().cities, function(e, map){
+            g.selectAll("circle")
+                .data(map)
+                .enter()
+                .append("circle")
+                .attr("transform", function(d) {
+                    return "translate(" + projection([d.lon,d.lat]) + ")";
+                })
+                .attr("r", 5)
+                .style("fill", "red")
+                .style("stroke", "black")
+                .on("mouseover", showCityTooltip)
+                .on("mouseout", hideCityTooltip);
+        });
+        
     }
 
     function keyHandler(d, i){
@@ -159,6 +169,37 @@ $(document).ready(function(){
                     chloropleth(JSON.parse(results.data));
                 }
             }
+        });
+    }
+
+    function showCityTooltip(d, i){
+        cityTooltip.style("left", (d3.event.pageX + 5) + "px")
+                .style("top", (d3.event.pageY - 5) + "px")
+                .transition()
+                .duration(300)
+                .style("opacity", 1)
+                //.style("background-color", "")
+                .style("display", "block");
+
+        $("#city_name").text(d.city);
+
+        $(this).css({
+            "stroke" :"#FF0000", 
+            "stroke-width" : 1.5 + "px",
+            "fill" : "#00FF00"
+        });
+
+    }
+
+    function hideCityTooltip(d, i){
+        cityTooltip.transition()
+                .duration(200)
+                .style("opacity", 0);
+
+        $(this).css({
+            "stroke" : "#000000", 
+            "stroke-width" : 1.0 + "px",
+            "fill" : "#FF0000"
         });
     }
 

@@ -65,4 +65,8 @@ function Defaults(){
 
         return template;
     }
+
+    this.cityTooltip = function(){
+        return "<div id = 'city_info' class = city_record'>City: <span id = 'city_name'></span></div>"
+    }
 }
