@@ -17,8 +17,13 @@ $(document).ready(function(){
         cityTooltip,
         data,
         pop,
-        default_tooltip = true;
-        chloropleth_selected = false;
+        default_tooltip = true,
+        chloropleth_selected= false,
+        density = false,
+        jsonData = null;
+
+    var url = "",
+    button = -1;
 
     init();
 
@@ -82,14 +87,6 @@ $(document).ready(function(){
 
         d3.json(defaults.getUrls().maine, function(e, map){
 
-            //use hancock county to center the map in a 500x600 svg element with some fancy math
-            //See http://bl.ocks.org/mbostock/4707858 for the source of the code below
-            var b = path.bounds(map.features[10]),
-            s = .22 / Math.max((b[1][0] - b[0][0]) / defaults.getWidth(), (b[1][1] - b[0][1]) / defaults.getHeight()),
-            t = [(defaults.getWidth() - s * (b[1][0] + b[0][0])) / 2.16, (defaults.getHeight() - s * (b[1][1] + b[0][1])) / 2.06];
-
-            //projection.scale(s).translate(t);
-            //projection.scale(s);
             g = svg.append("g");
 
             g.append("g")
@@ -107,8 +104,6 @@ $(document).ready(function(){
                 .on("mouseout", hideTooltip)
                 .on("contextmenu", rightClick)
                 .on("click", mouseClick);
-
-            
         });
             
         //handles the insertion of city points on the map
@@ -146,6 +141,10 @@ $(document).ready(function(){
                 if (results.success == "true")
                     var data = JSON.parse(results.data);
                     console.log(data);
+                    if ($("#county_data").hasClass("hide_element")){
+                        $(".data_wrapper").addClass("hide_element");
+                        $("#county_data").removeClass("hide_element").addClass("show_element");
+                    }
             }
 
         })
@@ -164,17 +163,21 @@ $(document).ready(function(){
             type : "POST",
             data : {"year" : year},
             dataType : "json",
-            success : function(results){
+            success : function(results){    
                 if (results.success == "true"){
-                    chloropleth(JSON.parse(results.data));
+                    jsonData = {
+                        "density" : JSON.parse(results.density),
+                        "pop" : JSON.parse(results.pop)
+                    };
+                    renderValues();
                 }
             }
         });
     }
 
     function showCityTooltip(d, i){
-        cityTooltip.style("left", (d3.event.pageX + 5) + "px")
-                .style("top", (d3.event.pageY - 5) + "px")
+        cityTooltip.style("left", (d3.event.pageX - 25) + "px")
+                .style("top", (d3.event.pageY + 40) + "px")
                 .transition()
                 .duration(300)
                 .style("opacity", 1)
@@ -204,20 +207,19 @@ $(document).ready(function(){
     }
 
     function updateTooltip(d, i){
-        tooltip.style("left", (d3.event.pageX + 5) + "px")
-                .style("top", (d3.event.pageY - 5) + "px");
+        tooltip.style("left", (d3.event.pageX - 75) + "px")
+                .style("top", (d3.event.pageY + 11) + "px");
 
     }
 
     //Shows the tooltip on mouseover of a county
     function showTooltip(d, i){
         tooltipText(d);
-        tooltip.style("left", (d3.event.pageX + 5) + "px")
-                .style("top", (d3.event.pageY - 5) + "px")
+        tooltip.style("left", (d3.event.pageX - 75) + "px")
+                .style("top", (d3.event.pageY + 11) + "px")
                 .transition()
                 .duration(300)
                 .style("opacity", 1)
-                //.style("background-color", "")
                 .style("display", "block");
 
         $(this).css("stroke", "#FF0000")
@@ -225,21 +227,16 @@ $(document).ready(function(){
     }
 
     function tooltipText(d){
-        if (default_tooltip) {
-            $("#county").text(d.properties.name);
-            $("#fips").text(d.properties.fips);
-        } else if (chloropleth_selected){
-
-            if (!($("#chloropleth_data").length < 0)){
-                $("#countyName").empty()
-                                .append(defaults.chloroplethTooltipTemplate());
-            }
-
-            $("#county").text(d.properties.name);
-            $("#fips").text(d.properties.fips);
-            $("#year").text($("#slider_value").text());
-            $("#year_pop").text(pop[d.properties.name]);
+        
+        $("#county").text(d.properties.name);
+        $("#fips").text(d.properties.fips);
+        
+        if ($(".extra_data").css("display") != "none"){
+            $(".pop_year").text($("#slider_value").text());
+            $("#county_population").text(jsonData.pop[d.properties.name]);
+            $("#county_density").text(jsonData.density[d.properties.name]);
         }
+        
     }
 
     //Hides the tooltip once the mouse pointer leaves the county
@@ -261,16 +258,70 @@ $(document).ready(function(){
 
     //Handle the initialization of jquery ui elements and event binding
     function initElements(){
-        $("#map_selection").buttonset();
+        $("#map_selection, #county_data_selection").buttonset();
 
-        $("#pop_heatmap").click(function(e){
-            if (!chloropleth_selected) {
+        $(".pop_button").click(function(){
+            if ($("#population_slider_wrapper").hasClass("hide_element")) {
                 $("#population_slider_wrapper").removeClass("hide_element").addClass("show_element");
+                $(".extra_data").css("display", "block");
                 mapColors();
-                populationSliderHandler(2000);
-                default_tooltip = false;
-                chloropleth_selected = true;
             }
+        });
+
+        $(".data_button").click(function(){
+            if ($("#county_data_display").hasClass("hide_element")){
+                $("#county_data_display").removeClass("hide_element").addClass("show_element");
+            }
+        });
+
+
+        $("#pop_data").click(function(){
+
+            $(".data_type").text("Population");
+
+        });
+
+        $("#demo_data").click(function(){
+            $(".data_type").text("Demographics");
+
+        });
+
+        $("#house_data").click(function(){
+            $(".data_type").text("Housing");
+
+        });
+
+        $("#fam_data").click(function(){
+            $(".data_type").text("Family");
+
+        });
+
+
+        $("#pop_hist_map").click(function(e){
+            if (!chloropleth_selected) {
+                
+                default_tooltip = false, 
+                density = false,
+                chloropleth_selected = true,
+                button = 1;
+                
+                mapColorValues("history", defaults.getDomain(1), null, null);
+                populationSliderHandler($("#population_slider").slider("value"));
+            }
+        });
+
+        $("#pop_dens_map").click(function(){
+            if (!density){
+                
+                default_tooltip = false, 
+                chloropleth_selected = false, 
+                density = true,
+                button = 2;
+
+                mapColorValues("density", defaults.getDomain(2), null, null);
+                populationSliderHandler($("#population_slider").slider("value"));
+            }
+
         });
 
         $("#population_slider").slider({
@@ -289,28 +340,51 @@ $(document).ready(function(){
         });
     }
 
-    function chloropleth(data){
-        pop = JSON.parse(data[0].fields.json);
-        var popDomain = defaults.getPopulationDomain();
+    //render the colors to the map by altering the fill and stroke values of the elements
+    function renderValues(){
+        var data = null;
+
+        if (button == 1) {
+            data = jsonData.pop;
+        } else {
+            data = jsonData.density;
+        }
+        
+        var popDomain = defaults.getDomain(button);
         var scale = defaults.getScale(popDomain[0], popDomain[1], 9);
         var colors = defaults.getPopColors();
 
-        for (key in pop){
-            for (var i = 0; i < scale.length; i++){
-                if (pop[key] == 0) {
-                    $("." + key).css("fill", "#FFFFFF")
-                                .css("stroke", "#000000");
-                } 
-                else if (pop[key] >= scale[i]){
-                    $("." + key).css("fill", colors[i + 1])
-                                .css("stroke", "#000000");
-                }
-                
+        for (key in data){
+            if (data[key] == 0) {
+                $("." + key).css("fill", "#FFFFFF")
+                            .css("stroke", "#000000");
 
+            } 
+            else if (data[key] > scale[scale.length - 1]) {
+                $("." + key).css("fill", colors[colors.length - 1])
+                            .css("stroke", "#000000");
+            }
+
+            else {
+
+                for (var i = 0; i < scale.length; i++){
+                    if (data[key] <= scale[i]){
+                        $("." + key).css("fill", colors[i + 1])
+                                    .css("stroke", "#000000");
+                        break;
+                    }
+
+                    else if (scale[i + i] !== undefined && data[key] > scale[i] && data[key] <= scale[i + 1]){
+                        $("." + key).css("fill", colors[i + 2])
+                                    .css("stroke", "#000000");
+                        break;
+                    }
+                }
             }
         }
     }
 
+    //create map color value boxes and fill them with color
     function mapColors(){
         var colors = defaults.getPopColors();
         var appendString = "";
@@ -320,16 +394,27 @@ $(document).ready(function(){
                             "<div class = 'box_label' id = 'box_" + i + "'></div></div>"
 
         $("#map_colors").append(appendString);
-        var domain = defaults.getPopulationDomain();
-        var scale = defaults.getScale(domain[0], domain[1], 10);
 
-        for (var i = 0; i < colors.length; i++) {
+        for (var i = 0; i < colors.length; i++) 
             $("#chloropleth_" + i).css("background-color", colors[i]);
-            $("#box_" + i).text(Math.floor(scale[i]));
-        }
+            
+    }
 
+    //set the color map values
+    function mapColorValues(type, domain, prefix, suffix){
+        var scale = defaults.getScale(domain[0], domain[1], 10);
+        var colors = defaults.getPopColors().length;
+        var append = "",
+            prepend = "";
 
+        if (suffix !== undefined || suffix !== null)
+            append = suffix;
 
+        if (prefix !== undefined || prefix !== null)
+            prepend = prefix;
+
+        for (var i = 0; i < colors; i++)
+            $("#box_" + i).text(prepend + Math.floor(scale[i]) + append);
     }
 
 

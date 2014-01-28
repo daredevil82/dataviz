@@ -15,10 +15,12 @@ class CensusHistory(models.Model):
 class StateCensusHistory(models.Model):
     id = models.AutoField(primary_key = True)
     year = models.IntegerField()
-    json = models.TextField()
+    population = models.TextField()
+    density = models.TextField()
+    pop_change = models.TextField()
 
     def __unicode__(self):
-        return "%d, %s\n" % (self.year, self.json)
+        return "%d, %s\n" % (self.year, self.population)
 
     class Meta:
         app_label = "app"

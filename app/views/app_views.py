@@ -5,7 +5,7 @@ from django.shortcuts import render
 import json
 
 from app.models import CensusHistory as hist, CountyData as cd, StateCensusHistory as sc
-from app.models import FarmData as farm, FamilyData as fam, HousingData as house
+from app.models import FamilyData as fam, HousingData as house
 from app.models import PopulationData as pop, DemographicData as demo
 
 
@@ -29,10 +29,12 @@ def getCensusYearData(request):
     censusYear = request.POST.get("year", None)
 
     if censusYear is not None:
-        data = sc.objects.filter(year = censusYear)
-        return HttpResponse(json.dumps({"success" : "true", "data" : serializers.serialize("json", data)}), 
+        data = sc.objects.get(year = censusYear)
+        return HttpResponse(json.dumps({"success" : "true", "pop" : data.population, "density" : data.density}), 
                             mimetype = "application/json")
 
     else:
         return HttpResponse(json.dumps({"success" : "false", "message" : "%s year number is invalid" % (countyFips)}), 
                             mimetype = "application/json")
+
+
