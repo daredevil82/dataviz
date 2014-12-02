@@ -1,0 +1,23 @@
+{
+  "name": "mainemap-django",
+  "version": "0.0.0",
+  "homepage": "https://github.com/daredevil82/dataviz",
+  "authors": [
+    "Jason Johns <jason.johns@maine.edu>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "d3": "~3.4.13",
+    "jquery-cookie": "~1.4.1",
+    "jquery-ui": "~1.11.2",
+    "sprintf": "~1.0.2"
+  }
+}

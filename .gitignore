@@ -1,4 +1,5 @@
 dataviz/settings.*
+app/static/bower
 .vagrant
-.logs
 logs
+
