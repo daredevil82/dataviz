@@ -1,1 +1,4 @@
 dataviz/settings.*
+.vagrant
+.logs
+logs

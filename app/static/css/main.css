@@ -1,5 +1,5 @@
 .background{
-    fill : lightgoldenrodyellow;
+    fill : white;
     pointer-events : all;
 
 }
@@ -92,7 +92,8 @@ div.tooltip {
 #map_colors{
     width: 500px;
     height: 30px;
-    margin-top: 155px;
+    display: inline-block;
+    margin-top: 45px;
 }
 
 .chloropleth_boxes{
@@ -103,6 +104,10 @@ div.tooltip {
     margin-left: 3px;
     border : 1px solid black;
     border-radius: 5px;
+}
+
+#chloropleth_data {
+    font-weight: bold;
 }
 
 .box_label {
